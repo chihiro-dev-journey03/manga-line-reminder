@@ -83,13 +83,13 @@ Web漫画の更新日をLINEで通知するリマインドサービスです。
 
 ## 7. このアプリで実現すること
 ### MVPで作る機能
-- LINE Messaging API連携
+- LINEログインによるユーザー管理: ログイン時に通知用のLINE内部ユーザーIDを取得・保持します。
 - 漫画タイトル、更新周期の登録・編集・削除機能
-- 設定日時にLINEのリマインドを送信する機能
-- LINEログインによるユーザー管理
+- LINEプッシュ通知機能: 設定された更新日に基づき、自動でLINEメッセージを送信します。
+- 非同期処理・自動リトライ: 送信失敗時に備え、Sidekiqを用いた通知の仕組みを構築します。
 
 ### 本リリースで作る機能
-- ゲストモード（会員登録前の簡易体験）
+- LIFF (LINE Front-end Framework)の実装: LINEアプリ内から設定画面をシームレスに開けるようにします。
 ---
 
 ## 8. このアプリの懸念点とその対策
@@ -122,24 +122,31 @@ Web漫画の更新日をLINEで通知するリマインドサービスです。
 
 ### 10-1. 使用予定の技術
 
-バックエンド: Ruby on Rails
-フロントエンド: React / Tailwind CSS
-データベース: PostgreSQL
-外部API: LINE Messaging API
-認証: LINE Login (Liff / Auth0など)
+バックエンド: Ruby on Rails 7 (ERB / Tailwind CSS)
+
+データベース: PostgreSQL / Redis (Sidekiq用)
+
+非同期処理: Sidekiq / ActiveJob
+
+定期実行: whenever (cron)
+
+外部API: LINE Messaging API (LINEログイン / Push Message)
 
 ---
 
 ### 10-2. 技術選定の理由
 
 なぜこの技術を使うのか:
-Rails: Rails中心で学習を進めてきたため、さらに理解を深めたいから。
-React: 業務でReactを知る機会があり、実際の現場で使われていることを実感したから。
-LINE API: APIの実装に興味があり、一番身近かつ日本語ドキュメントが充実しているから。
+
+Rails: Rails中心で学習を進めてきたかつ卒業までの限られたスケジュールでリソースを集中させるため。
+
+ActiveJob + Sidekiq: 自動リトライ機能によって送信失敗を防ぐため。
+
+whenever: シンプルに提示処理をRailsで実装できるため。
 
 今回チャレンジしたい点:
 
-LINE API の実装
+LINE Messaging API (LINEログイン / Push Message) の実装
 
 不安な点:
 
